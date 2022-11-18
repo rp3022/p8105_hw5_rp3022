@@ -179,7 +179,7 @@ power_plot = sim_any %>%
 
 From the graph it can be observed that as the true value of μ increases, the power of the test also increases. We can conclude that the effect size increases, the power of the test to reject the null also increases.
 
-```{r average vs true}
+```{r plots}
 reject_avg = sim_any %>%
   group_by(mu_val) %>%
   filter (reject_if == TRUE) %>%
@@ -225,5 +225,5 @@ overlay_plot
 ```
 
 
-
+The overlay plot shows that the true mean and average mean diverge for smaller values of mean and are similar when the mean value increases. This is because when the true mean is greater, there is higher proportion of rejection due to larger effect size. So, as avg estimate of μ ^ for null is rejected (Y axis) increases, it converges with the effect true value of μ (X axis) due to higher power to reject the null.
 
