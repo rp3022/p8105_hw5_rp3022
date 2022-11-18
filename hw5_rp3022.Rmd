@@ -93,3 +93,18 @@ city_prop = homicide %>%
   knitr::kable(city_prop)
  
 ```
+
+#### Plotting for estimates and 95% CI for each city
+```{r plotting proportions}
+plot_city = city_prop %>%
+  mutate (city_state = reorder (city_state, estimate)) %>%
+  ggplot(aes (x = city_state, y = estimate)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high)) + 
+  theme(legend.position = "bottom", axis.text.x = element_text(angle = 60, hjust = 1)) + 
+  labs (title = "Plot for proportion estimate and 95% CI for each city",
+        x = "City and State",
+        y = "Proportion estimate with 95% CI")
+  
+plot_city
+```
