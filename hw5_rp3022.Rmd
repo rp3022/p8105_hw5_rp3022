@@ -50,22 +50,46 @@ The dataset contains data of criminal homicides over the past decade in 50 Ameri
 * The total number of observations  are **`r nrow(homicide_raw)`** and the total number of variables are **`r ncol(homicide_raw)`**
 * It includes variables **`r colnames(homicide_raw)`**. 
 
-#### Data wrangling and tidying the dataset
 
 ```{r summarizing homicides}
 homicide = homicide_raw %>%
 unite('city_state',"city":"state", remove = FALSE)%>%
   select(-city,-state)%>%
-   mutate (homi_type = case_when (disposition == "Closed without arrest" ~ "Unsolved", 
-                                  disposition == "Open/No arrest" ~ "Unsolved", 
-                                  disposition == "Closed by arrest" ~ "Solved" )) %>%
+   mutate (homi_type = case_when (disposition == "Closed without arrest" ~ "unsolved", 
+                                  disposition == "Open/No arrest" ~ "unsolved", 
+                                  disposition == "Closed by arrest" ~ "solved" )) %>%
   group_by(city_state) %>%
   filter (city_state != "Tulsa_AL") %>%
   count(homi_type) %>%
   spread(key = homi_type, value = n)%>%
-  mutate (total = Solved + Unsolved) %>%
-  select (-Solved)
+  mutate (total = solved + unsolved) %>%
+  select (-solved) 
   
 ```
 
+#### Filtering and Estimating Homicide proportion for Baltimore:
+```{r Baltimore homicides}
+baltimore = homicide %>%
+  filter(city_state == "Baltimore_MD")
+```
 
+```{r Baltimore proportion}
+balt_prop = 
+  prop.test(baltimore$unsolved, baltimore$total)%>%
+  broom::tidy() %>%
+  select (estimate, conf.low, conf.high)
+
+  knitr::kable(balt_prop)
+```
+
+#### Estimating Homicide proportion for each city 
+```{r proportions for each cities}
+city_prop = homicide %>%
+  mutate(city_prop = list(broom::tidy(prop.test(unsolved, total, conf.level=0.95)))) %>%
+  unnest(city_prop)%>%
+  select (city_state, estimate, conf.low, conf.high)%>%
+  ungroup()
+
+  knitr::kable(city_prop)
+ 
+```
