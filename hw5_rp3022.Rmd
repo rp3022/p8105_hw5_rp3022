@@ -162,4 +162,68 @@ sim_any =
   )
 ```
 
+#### Creating plots 
+
+```{r plot for power and mu}
+power_plot = sim_any %>%
+  group_by(mu_val) %>%
+  summarise(power = sum(reject_if)/5000) %>%
+  ggplot(aes(x = mu_val, y = power)) +
+  geom_point (aes(color = mu_val)) +
+  geom_line() + 
+  labs (title = " Power vs True value of mu",
+        x = "True value of Mu",
+        y = "Power")
+  power_plot
+```
+
+From the graph it can be observed that as the true value of μ increases, the power of the test also increases. We can conclude that the effect size increases, the power of the test to reject the null also increases.
+
+```{r average vs true}
+reject_avg = sim_any %>%
+  group_by(mu_val) %>%
+  filter (reject_if == TRUE) %>%
+  summarise (mean_reject = mean(estimate))
+
+all_avg = sim_any %>%
+  group_by(mu_val) %>%
+  summarise (mean_all = mean(estimate))
+
+avg_combined = full_join(reject_avg, all_avg, by = "mu_val") %>%
+  pivot_longer(
+    mean_reject:mean_all,
+    names_to = "samples",
+    values_to = "avg_estimates"
+  )
+
+all_plot = all_avg %>%
+  ggplot (aes(x= mu_val, y= mean_all)) +
+  geom_point (alpha = 0.5) + 
+  geom_line () +
+labs (title = "True vs Average estimate of μ^ for all sample",
+        x = "True value of μ",
+        y = "Average estimate of μ^")
+all_plot
+
+reject_plot = reject_avg %>%
+  ggplot (aes(x= mu_val, y= mean_reject)) +
+  geom_point (alpha = 0.5) + 
+  geom_line () +
+labs (title = "True value vs Average estimate of μ^ when null was rejected",
+        x = "True value of μ",
+        y = "Average estimate of μ^ for Null-rejected")
+reject_plot
+
+overlay_plot = avg_combined %>%
+  ggplot (aes(x= mu_val, y= avg_estimates, group = samples)) +
+  geom_point (aes(color = samples), alpha = 0.5) + 
+  geom_line (aes(color = samples)) +
+labs (title = "Overlay Plot for true value of μ vs Average estimate of μ^ in all sample and rejected sample",
+        x = "True value of μ",
+        y = "Average estimate of μ^ for Null-rejected")
+overlay_plot
+```
+
+
+
 
