@@ -50,4 +50,22 @@ The dataset contains data of criminal homicides over the past decade in 50 Ameri
 * The total number of observations  are **`r nrow(homicide_raw)`** and the total number of variables are **`r ncol(homicide_raw)`**
 * It includes variables **`r colnames(homicide_raw)`**. 
 
+#### Data wrangling and tidying the dataset
+
+```{r summarizing homicides}
+homicide = homicide_raw %>%
+unite('city_state',"city":"state", remove = FALSE)%>%
+  select(-city,-state)%>%
+   mutate (homi_type = case_when (disposition == "Closed without arrest" ~ "Unsolved", 
+                                  disposition == "Open/No arrest" ~ "Unsolved", 
+                                  disposition == "Closed by arrest" ~ "Solved" )) %>%
+  group_by(city_state) %>%
+  filter (city_state != "Tulsa_AL") %>%
+  count(homi_type) %>%
+  spread(key = homi_type, value = n)%>%
+  mutate (total = Solved + Unsolved) %>%
+  select (-Solved)
+  
+```
+
 
