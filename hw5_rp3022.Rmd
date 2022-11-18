@@ -1,6 +1,6 @@
 ---
 title: "homework 5"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -32,6 +32,22 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 library(tidyverse)
 ```
 
+## problem 2
 
+Importing the raw homicides dataset:
+```{r, message=FALSE}
+library (readr)
+
+urlfile="https://raw.githubusercontent.com/washingtonpost/data-homicides/master/homicide-data.csv"
+
+homicide_raw <-read_csv(url(urlfile)) %>% 
+  janitor::clean_names()
+```
+
+#### Raw dataset description:
+The dataset contains data of criminal homicides over the past decade in 50 American cities. 
+
+* The total number of observations  are **`r nrow(homicide_raw)`** and the total number of variables are **`r ncol(homicide_raw)`**
+* It includes variables **`r colnames(homicide_raw)`**. 
 
 
